@@ -1,9 +1,1 @@
-################################################
-#groupe DLBI
-#Pauline HOSTI
-#Rania SAIFI
-#Adeline MOUTOU
-#Clément MAOUCHE
-#Maya SANTINI
-#https://github.com/Nathan-Carre/projet_incendie
-################################################
+Projet d'informatique en Python du second semestre. C'est un projet de simulation de propagation d'un incendie. 
