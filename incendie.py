@@ -5,6 +5,7 @@
 #Adeline MOUTOU
 #Clément MAOUCHE
 #Maya SANTINI
+#Nathan CARRE
 #https://github.com/Nathan-Carre/projet_incendie
 ################################################
 
