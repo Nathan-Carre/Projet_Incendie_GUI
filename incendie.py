@@ -25,6 +25,6 @@ import tkinter as tk
 ######PROGRAMME PRINCIPAL######################
 ###############################################
 
-#TEST Clément
+#TEST Clément (è(_'-'((_ç"'-èè))))
 
 #chocolat
