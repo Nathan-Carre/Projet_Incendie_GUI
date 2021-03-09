@@ -66,7 +66,13 @@ def generate_field():
 
 
 def take_fire(line, column):
-    if (terrain[line][column]=='Green' or terrain[line][column]=='Yellow') and line > 0 and line < HAUTEUR-1 and column > 0 and column < LARGEUR -1:
+    if (terrain[line][column]=='Green' or terrain[line][column]=='Yellow') and line >= 0 and line <= HAUTEUR and column >= 0 and column <= LARGEUR:
+        terrain[line][column]='Red'
+        fenetre.grid_slaves(row=line, column=column)[0].configure( background = terrain[line][column])
+    
+def propagation(line, column):
+    #####ca marche pas c'était juste une tentative/idée
+    if terrain[line][column]=='Yellow' and (terrain[line+1][column]=='Red' or terrain[line][column+1]=='Red' or terrain[line-1][column]=='Red' or terrain[line][column-1]=='Red'):
         terrain[line][column]='Red'
         fenetre.grid_slaves(row=line, column=column)[0].configure( background = terrain[line][column])
 
@@ -75,7 +81,7 @@ def generate_windows():# Création d'une fenêtre avec la classe Tk :
     for l in range(HAUTEUR):
         for c in range(LARGEUR):
             tk.Button(fenetre, background= terrain[l][c], borderwidth=1, height=2, width=5, command = lambda line=l, column=c : take_fire(line, column)).grid(row=l,column=c)
-    
+    ##il faut trouver comment détruire la fenetre générée précedemment quand on en genere une nouvelle (.destroy?)
     return fenetre
 ###############################################
 
@@ -83,6 +89,23 @@ def generate_windows():# Création d'une fenêtre avec la classe Tk :
 
 terrain = generate_field()
 fenetre = generate_windows()
+conteneur = tk.Toplevel(bg="black")
+
+
+bouton_terrain = tk.Button(conteneur, text="Génerer un terrain", command=generate_windows, fg = "black", bg="white", activebackground="black", activeforeground="white")
+bouton_save = tk.Button(conteneur, text="Sauvegarder", fg = "black", bg="white", activebackground="black", activeforeground="white")
+bouton_load = tk.Button(conteneur, text="Charger un fichier", fg = "black", bg="white", activebackground="black", activeforeground="white")
+bouton_etape = tk.Button(conteneur, text="Prochaine étape", command=propagation, fg = "black", bg="white", activebackground="black", activeforeground="white")
+bouton_begin = tk.Button(conteneur, text="Commencer la simulation", fg = "black", bg="white", activebackground="black", activeforeground="white")
+bouton_stop = tk.Button(conteneur, text="Arrêter", fg = "black", bg="white", activebackground="black", activeforeground="white")
+
+bouton_terrain.grid(row=1,column=0, columnspan=2)
+bouton_save.grid(row=0,column=3)
+bouton_load.grid(row=0,column=2)
+bouton_etape.grid(row=0,column=1)
+bouton_begin.grid(row=0,column=0)
+bouton_stop.grid(row=1,column=2, columnspan=2)
+
 fenetre.mainloop()
 
 ###############################################
