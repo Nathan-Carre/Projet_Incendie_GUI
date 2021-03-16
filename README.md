@@ -25,7 +25,7 @@ La solution mise en place est dôté d'une interface graphique permettant à l'u
 
 Le boutton "Générer un nouveau terrain" comme son nom l'indique permet de générer un terrain de façon aléatoire. Celui-ci sera composé d'un nombre aléatoire de parcelles d'eau, de forêt et de prairie, représenté respectivement par les couleurs bleu, vert et jaune.
 
-![alt texte](https://github.com/Nathan-Carre/projet_incendie/blob/main/ressources/Capture02.PNG)
+![alt texte](https://github.com/Nathan-Carre/projet_incendie/blob/main/ressources/Capture02.png)
 
 
 ### 2 - Première flamme 
