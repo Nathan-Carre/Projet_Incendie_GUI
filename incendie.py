@@ -1,118 +1,297 @@
-################################################
-#groupe DLBI
-#Pauline HOSTI
-#Rania SAIFI
-#Adeline MOUTOU
-#Clément MAOUCHE
-#Maya SANTINI
-#Nathan CARRE
-#https://github.com/Nathan-Carre/projet_incendie
+#########################
+# Groupe de TD:
+# groupe LDDBI 
+# Auteurs:
+# Pauline HOSTI
+# Rania SAIFI
+# Adeline MOUTOU
+# Clément MAOUCHE
+# Maya SANTINI
+# Nathan CARRE
+# Adresse du dépôt GitHub:
+# https://github.com/Nathan-Carre/projet_incendie
 ################################################
 
 ######LIBRAIRIES################################
-import tkinter as tk
-import random
+from tkinter import *
+import random as rd
 ################################################
 
 ######CONSTANTES################################
-LARGEUR = 10;
-HAUTEUR = 6;
+ratioHauteur = 0.8
+largeurCanvas = 500
+hauteurCanvas = 500
+nbParcellesLargeur = 50
+nbParcellesHauteur = 50
+largeurParcelle = min(largeurCanvas/nbParcellesLargeur,hauteurCanvas/nbParcellesHauteur)
+hauteurParcelle = min(largeurCanvas/nbParcellesLargeur,hauteurCanvas/nbParcellesHauteur)
+decalageX = (largeurCanvas-nbParcellesLargeur*largeurParcelle)/2
+decalageY = (hauteurCanvas-nbParcellesHauteur*hauteurParcelle)/2
+couleurs = ["green","yellow","blue"]
+poidsForet = 20
+poidsPrairie = 100
+poidsEau = 20
+casesModif = []
+nouvellesCasesFeu = []
+casesNoires = []
+dureeFeu = 1
+dureeCendre = 0
+id = 0
+fonte = ("TkDefaultFont",16)
 ################################################
 
 ######VARIABLES GLOBALES########################
+simulation = False
+nbParcellesFeu = 0
+vitesseSimulation = 10
+nbCasesPrairie = 0
+nbCasesForet = 0
+nbCasesEau = 0
+nbCasesCH = 0
+nbCasesCE = 0
+listeCouleurs = []
+cases = []
 ################################################
 
 ######FONCTIONS################################
-def generate_field():
+def creation() : 
+    global cases, nbCasesPrairie, nbCasesForet, nbCasesEau, nbCasesCH, nbCasesCE, nbParcellesFeu, casesNoires, casesModif
+    cases[:] = []
+    casesNoires[:] = []
+    casesModif[:] = []
+    listeCouleurs.clear()
+    nbCasesPrairie, nbCasesForet, nbCasesEau=0,0,0
+    for n in range(0,nbParcellesLargeur*nbParcellesHauteur):
+        i = n // nbParcellesLargeur
+        j = n % nbParcellesLargeur
+        couleur = rd.choices(couleurs,[poidsForet,poidsPrairie,poidsEau])[0]
+        listeCouleurs.append(couleur)
+        duree = 0
+        id = c.create_rectangle(j*largeurParcelle+decalageX,i*hauteurParcelle+decalageY,j*largeurParcelle+largeurParcelle+decalageX,i*hauteurParcelle+hauteurParcelle+decalageY,fill=couleur,width=0)
+        cases.append([id,couleur,duree,i,j])
+    #c.create_text(j*hauteurParcelle+hauteurParcelle/2,i*largeurParcelle+largeurParcelle/2,text=(id))
+    nbCasesPrairie = listeCouleurs.count("yellow")
+    nbCasesForet = listeCouleurs.count("green")
+    nbCasesEau = listeCouleurs.count("blue")
+    nbCasesCH, nbCasesCE, nbParcellesFeu = 0, 0, 0
+    majLabels()
 
-    terrain = [];
 
-    for line in range(HAUTEUR):
+def afficheCarre(carre):
+    for i in carre:
+        for j in i:
+            print('{:^10}'.format(j),end='')
+        print("\n")
+
+
+def modif():
+    c.itemconfigure(1,fill="black")
+
+
+def AllumerClic(event):
+    x, y = event.x, event.y
+    source = c.find_closest(x,y)[0]
+    #bruler(source)
+    #print("ID:",source)
+    for i in range(0,len(cases)):
+        if cases[i][0] == source:
+            bruler(i)
+            return
+   
+
+def bruler(index):
+    global nbParcellesFeu, nbCasesPrairie, nbCasesForet
+    if cases[index][1] != "red" and cases[index][1] != "blue":
+        if cases[index][1] == "yellow":
+            nbCasesPrairie -= 1
+        elif cases[index][1] == "green":
+            nbCasesForet -= 1
+        elif cases[index][1] == "grey":
+            nbCasesCH -= 1
+        else:
+            nbCasesCE -= 1
+        c.itemconfig(cases[index][0],fill="red")
+        cases[index][1] = "red"
+        cases[index][2] = dureeFeu
+        nbParcellesFeu += 1
+        casesModif.append(index)
+        majLabels()
+
     
-        # Si la line n'existe pas on l'ajoute 
-        # Si le nombre de la line +1 > à la taille du tableau donc elle n'existe pas donc on ajoute la line
-        # Exemple : si le tableau contient 5 lignes et qu'on est à la 6 ème 
-        # il faut ajouter une ligne car elle n'existe pas dans le tableau
-        if line + 1 > len(terrain):
-            terrain.append([]);
-            
-        # Pour chaque ligne on les remplits de façon aléatoire
-        for colonne in range(LARGEUR):
-            
-            # On prend un nombre aléatoire entre 0 et 1
-            proba = random.random();
-            
-            if proba < 0.33:
-                
-                # Si la colonne n'existe pas dans la ligne on l'ajoute avec la bonne couleur
-                if colonne + 1 > len(terrain[line]):
-                    terrain[line].append('Blue');
-                    
-                # Si non si elle existe on change la couleur.
-                else:
-                    terrain[line][colonne] = 'Blue';
-            elif proba < 0.66 and proba >= 0.33:
-                if colonne + 1 > len(terrain[line]):
-                    terrain[line].append('Green');
-                else:
-                    terrain[line][colonne] = 'Green';
-            elif proba < 1 and proba >= 0.66:
-                if colonne + 1 > len(terrain[line]):
-                    terrain[line].append('Yellow');
-                else:
-                    terrain[line][colonne] = 'Yellow';
+def simuler():
+    #Changement de couleur des cases avec duree = 0
+    global nbParcellesFeu, nbCasesCH, nbCasesCE
+    for i in casesModif:
+        cases[i][2] -= 1   
+        #Propagation du feu
+        if cases[i][1] == "red":
+            colonne = i % nbParcellesLargeur
+            casesVoisines = [i-1,i+1,i-nbParcellesLargeur,i+nbParcellesLargeur]
+            #print("i=",i,"colonne=",colonne,casesVoisines)
+            for x in casesVoisines:
+                if (x >= 0 and x < nbParcellesLargeur*nbParcellesHauteur and x not in nouvellesCasesFeu and
+                not (colonne == 0 and x==i-1) and not (colonne == nbParcellesLargeur-1 and x==i+1)):
+                    if cases[x][1] == "yellow":
+                        nouvellesCasesFeu.append(x)
+                    if cases[x][1] == "green":
+                        if rd.random() < 0.1:
+                            nouvellesCasesFeu.append(x)
+
+        if cases[i][2] <= 0:
+            if cases[i][1] == "red":
+                cases[i][1] = "grey"
+                cases[i][2] = dureeCendre
+                c.itemconfig(cases[i][0],fill="grey")
+                nbCasesCH += 1
+                nbParcellesFeu -= 1
+                #print(i,"devient gris")
+            else:
+                nbCasesCH -= 1
+                nbCasesCE += 1
+                cases[i][1] = "black"
+                c.itemconfig(cases[i][0],fill="black")
+                casesNoires.append(i)
+    #Les cases noires deviennent inertes
+    for i in casesNoires:
+        casesModif.remove(i)
+    casesNoires.clear()
+
+    for i in nouvellesCasesFeu:
+        bruler(i)
+    nouvellesCasesFeu.clear()
+    #afficheCarre(cases)
+    majLabels()
+
+
+def majLabels():
+    labelPrairie.config(text="Prairie: "+str('{: >6}'.format(nbCasesPrairie)))
+    labelForet.config(text="Forêt: "+str('{: >6}'.format(nbCasesForet)))
+    labelEau.config(text="Eau: "+str('{: >6}'.format(nbCasesEau)))
+    labelNbCasesFeu.config(text=format("Feu : "+str('{: >4}'.format(nbParcellesFeu))))
+    labelCendresChaudes.config(text="Cendres chaudes: "+str('{: >6}'.format(nbCasesCH)))
+    labelCendresEteintes.config(text="Cendres éteintes: "+str('{: >6}'.format(nbCasesCE)))
+
+
+def activerSimulationAuto():
+    global simulation
+    simulation = not simulation
+    simulerAuto()
+    boutonSimAuto.configure(text="Simulation automatique")
+
+def simulerAuto():
+    global simulation
+    if simulation:
+        boutonSimAuto.configure(text="Stop")
+        if nbParcellesFeu:
+            simuler()
+            fen.after(int(1.0/vitesseSimulation*1000),simulerAuto)
+        else:
+            simulation = False
         
-    return terrain;
+
+def augmenterVitesse():
+    global vitesseSimulation
+    vitesseSimulation += 1
+    labelVitesseSim.config(text=format("Etapes / seconde: "+str(vitesseSimulation)))
 
 
-def take_fire(line, column):
-    if (terrain[line][column]=='Green' or terrain[line][column]=='Yellow') and line >= 0 and line <= HAUTEUR and column >= 0 and column <= LARGEUR:
-        terrain[line][column]='Red'
-        fenetre.grid_slaves(row=line, column=column)[0].configure( background = terrain[line][column])
-    
-def propagation(line, column):
-    #####ca marche pas c'était juste une tentative/idée
-    if terrain[line][column]=='Yellow' and (terrain[line+1][column]=='Red' or terrain[line][column+1]=='Red' or terrain[line-1][column]=='Red' or terrain[line][column-1]=='Red'):
-        terrain[line][column]='Red'
-        fenetre.grid_slaves(row=line, column=column)[0].configure( background = terrain[line][column])
+def baisserVitesse():
+    global vitesseSimulation
+    if vitesseSimulation > 1:
+        vitesseSimulation -= 1
+        labelVitesseSim.config(text=format("Etapes / seconde: "+str(vitesseSimulation)))
 
-def generate_windows():# Création d'une fenêtre avec la classe Tk :
-    fenetre = tk.Tk()
-    for l in range(HAUTEUR):
-        for c in range(LARGEUR):
-            tk.Button(fenetre, background= terrain[l][c], borderwidth=1, height=2, width=5, command = lambda line=l, column=c : take_fire(line, column)).grid(row=l,column=c)
-    ##il faut trouver comment détruire la fenetre générée précedemment quand on en genere une nouvelle (.destroy?)
-    return fenetre
+
+def sauvegarder():
+    global cases, nbCasesPrairie, nbCasesForet, nbCasesEau, nbCasesCH, nbCasesCE, nbParcellesFeu, casesNoires, casesModif, nouvellesCasesFeu
+    cases.extend([[nbCasesPrairie, nbCasesForet, nbCasesEau, nbCasesCH, nbCasesCE, nbParcellesFeu], casesNoires, casesModif, nouvellesCasesFeu])
+    nom_fichier = svEntry.get() + '.txt'
+    Fichier = open(nom_fichier, 'w')
+    for i in cases : 
+        txt = ' '.join([str(elem) for elem in i])  
+        Fichier.write(txt + '\n')
+    Fichier.close()
+
+
+def charger():
+    global cases, nbCasesPrairie, nbCasesForet, nbCasesEau, nbCasesCH, nbCasesCE, nbParcellesFeu, casesNoires, casesModif, nouvellesCasesFeu
+    cases[:] = []
+    casesNoires[:] = []
+    casesModif[:] = []
+    nouvellesCasesFeu[:] = []
+    nom_fichier = svEntry.get() + '.txt'
+    chargement = open(nom_fichier, "r")
+    list_chargement = [(line.strip()).split() for line in chargement]
+    chargement.close()
+    for i in list_chargement :
+        if i == list_chargement[len(list_chargement)-4] :
+            nbCasesPrairie = int(list_chargement[len(list_chargement)-4][0])
+            nbCasesForet = int(list_chargement[len(list_chargement)-4][1])
+            nbCasesEau = int(list_chargement[len(list_chargement)-4][2])
+            nbParcellesFeu = int(list_chargement[len(list_chargement)-4][5])
+            nbCasesCH = int(list_chargement[len(list_chargement)-4][3])
+            nbCasesCE = int(list_chargement[len(list_chargement)-4][4])
+            majLabels()
+        elif i == list_chargement[len(list_chargement)-2] : 
+            casesModif = [int(elem) for elem in i ]
+        elif i == list_chargement[len(list_chargement)-3] :
+            casesNoires = [int(elem) for elem in i]
+        elif i == list_chargement[len(list_chargement)-1] :
+            nouvellesCasesFeu = [int(elem) for elem in i]
+        else : 
+            id = c.create_rectangle(int(i[4])*largeurParcelle+decalageX, int(i[3])*hauteurParcelle+decalageY,
+                (int(i[4]))*largeurParcelle+largeurParcelle+decalageX, (int(i[3]))*hauteurParcelle+hauteurParcelle+decalageY, fill=i[1], width=0)
+            cases.append([id,i[1],int(i[2]),int(i[3]),int(i[4])])
+
+def clic(yil):
+    svEntry.set("")
+
 ###############################################
 
 ######PROGRAMME PRINCIPAL######################
+fen = Tk()
+svEntry = StringVar()
+svEntry.set("Entrez le nom de votre fichier")
+fen.title('simulation incendie')
+conteneur = Toplevel(bg="black")
 
-terrain = generate_field()
-fenetre = generate_windows()
-conteneur = tk.Toplevel(bg="black")
+c = Canvas(fen,width=largeurCanvas,height=hauteurCanvas,bg="black")
+bouton = Button(conteneur,text="Simuler (1 étape)", fg="#ab55e4",bg="black",activebackground="#ab55e4", activeforeground="black",command=simuler,font='Segoe')
+boutonSimAuto = Button(conteneur,text="Simulation automatique", fg="#ab55e4",bg="black",activebackground="#ab55e4", activeforeground="black",command=activerSimulationAuto,font='Segoe')
+labelNbCases = Label(conteneur,text=format("Parcelles : "+str(nbParcellesLargeur*nbParcellesHauteur)),bg="black",fg="#ab55e4",font='Segoe')
+labelNbCasesFeu = Label(conteneur,text=format("Feu : "+str('{: >4}'.format(nbParcellesFeu))),bg="red",fg="black",font='Segoe')
+labelPrairie = Label(conteneur,text="Prairie: ",bg="yellow",fg="black",font='Segoe')
+labelForet = Label(conteneur,text="Forêt: ",bg="green",fg="black",font='Segoe')
+labelEau = Label(conteneur,text="Eau: ",bg="blue",fg="black",font='Segoe')
+labelCendresChaudes = Label(conteneur,text="Cendres chaudes: "+str('{: >6}'.format(nbCasesCH)),bg="black",fg="#ab55e4",font='Segoe')
+labelCendresEteintes = Label(conteneur,text="Cendres éteintes: "+str('{: >6}'.format(nbCasesCE)),bg="black",fg="#ab55e4",font='Segoe')
+labelVitesseSim = Label(conteneur,text=format("Etapes / seconde: "+str(vitesseSimulation)),bg="black",fg="#ab55e4",font='Segoe')
+bouton_sauvegarder = Button(conteneur, text="Sauvegarder le terrain", command=sauvegarder,bg="black",fg="#ab55e4",activebackground="#ab55e4", activeforeground="black",font='Segoe')
+bouton_charger = Button(conteneur, text="Charger un terrain", bg="black",fg="#ab55e4",activebackground="#ab55e4", activeforeground="black",font='Segoe', command=charger)
+bouton_terrain = Button(conteneur, text="Génerer un nouveau terrain", bg="black",fg="#ab55e4",activebackground="#ab55e4", activeforeground="black",font='Segoe', command=creation)
+edit = Entry(conteneur, fg="black", textvariable = svEntry,bg="#ab55e4", width=30)
+edit.bind('<Button-1>',clic)
 
+c.grid()
+bouton.grid(row=4,column=0)
+boutonSimAuto.grid(row=5,column=0)
+labelNbCases.grid(row=0,rowspan=2,column=1)
+labelNbCasesFeu.grid(row=3,column=2)
+labelPrairie.grid(row=0,column=2)
+labelForet.grid(row=1,column=2)
+labelEau.grid(row=2,column=2)
+labelCendresChaudes.grid(row=4,column=2)
+labelCendresEteintes.grid(row=5,column=2)
+labelVitesseSim.grid(row=5,column=1)
+bouton_sauvegarder.grid(row=1,column=0)
+bouton_charger.grid(row=2,column=0)
+edit.grid(row=2, rowspan=2, column=1)
+bouton_terrain.grid(row=0, column=0)
 
-bouton_terrain = tk.Button(conteneur, text="Génerer un terrain", command=generate_windows, fg = "black", bg="white", activebackground="black", activeforeground="white")
-bouton_save = tk.Button(conteneur, text="Sauvegarder", fg = "black", bg="white", activebackground="black", activeforeground="white")
-bouton_load = tk.Button(conteneur, text="Charger un fichier", fg = "black", bg="white", activebackground="black", activeforeground="white")
-bouton_etape = tk.Button(conteneur, text="Prochaine étape", command=propagation, fg = "black", bg="white", activebackground="black", activeforeground="white")
-bouton_begin = tk.Button(conteneur, text="Commencer la simulation", fg = "black", bg="white", activebackground="black", activeforeground="white")
-bouton_stop = tk.Button(conteneur, text="Arrêter", fg = "black", bg="white", activebackground="black", activeforeground="white")
+fen.bind('<space>',lambda e:simuler())
+fen.bind('<Right>',lambda e:augmenterVitesse())
+fen.bind('<Left>',lambda e:baisserVitesse())
+c.bind('<Button-1>',AllumerClic)
 
-bouton_terrain.grid(row=1,column=0, columnspan=2)
-bouton_save.grid(row=0,column=3)
-bouton_load.grid(row=0,column=2)
-bouton_etape.grid(row=0,column=1)
-bouton_begin.grid(row=0,column=0)
-bouton_stop.grid(row=1,column=2, columnspan=2)
-
-fenetre.mainloop()
-
+fen.mainloop()
 ###############################################
-
-#TEST Clément
-
-#chocolat
-#TEST Clément (è(_'-'((_ç"'-èè))))
-
-#vanille
