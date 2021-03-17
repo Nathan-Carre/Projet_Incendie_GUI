@@ -7,7 +7,7 @@ L'objectif de ce projet est de mettre en place une solution permettant de simule
 - Forêt
 - Prairie
 
-L'état d'une parcelle peut évoluer selon l'état des parcelles l'avoisinant. L'évolution des parcelles suit les règles suivantes : 
+L'état d'une parcelle peut évoluer selon l'état des parcelles qui l'entourent. L'évolution des parcelles suit les règles suivantes : 
 
 - une parcelle d’eau reste une parcelle d’eau durant toute la simulation;
 - une parcelle qui devient en feu reste en feu durant 2 étapes de simulation avant de devenir des cendres tièdes pendant 1 étape de simulation et enfin devenir des cendres éteintes durant le reste de la simulation; les valeurs de ces deux constantes sont à définir et laissées à votre appréciation;
@@ -30,13 +30,13 @@ Le bouton "Générer un nouveau terrain" comme son nom l'indique permet de gén�
 
 ### 2 - Première flamme 
 
-Une fois le terrain généré l'utilisateur peut sélectionner une parcelle parmi les parcelles de forêt et de prairie disponible afin de l'enflammer. Cette sélection se fait d'un simple click sur la parcelle en question, qui sera par la suite représentée par la couleur rouge.
+Une fois le terrain généré l'utilisateur peut sélectionner une parcelle parmi les parcelles de forêt et de prairie disponible afin de l'enflammer. Cette sélection se fait par un simple click sur la parcelle en question, qui sera par la suite représentée par la couleur rouge. Une parcelle rouge est nécéssaire au fonctionnement de la simulation de l'incendie.
 
 ![alt texte](https://github.com/Nathan-Carre/projet_incendie/blob/main/ressources/Capture03.PNG)
 
 ### 3 - Effectuer une étape de simulation
 
-Afin de pouvoir visualiser la propagation de l'incendie, il est possible d'effectuer manuellement une étape de la simulation. Pour ce faire l'utilisateur peut utiliser le bouton "Simuler (1 étape)".
+Afin de pouvoir visualiser la propagation de l'incendie, il est possible d'effectuer manuellement une seule étape de la simulation. Pour ce faire l'utilisateur peut utiliser le bouton "Simuler (1 étape)".
 
 ![alt texte](https://github.com/Nathan-Carre/projet_incendie/blob/main/ressources/Capture04.PNG)
 
@@ -54,24 +54,28 @@ Une fois la simulation automatique lancée, il est possible de l'arrêter à tou
 
 ### 4 - Sauvegarder / Charger un terrain
 
-La solution permet à l'utilisateur de sauvegarder son terrain à tout moment sous la forme d'un fichier texte. Pour ce faire il suffit de saisir le nom du fichier dans la zone prévue à cet effet.
+La solution permet à l'utilisateur de sauvegarder son terrain à tout moment sous la forme d'un fichier texte. Pour ce faire il suffit de saisir le nom du fichier sans écrire l'extension ".txt" qui s'effectue automatiquement, dans la zone prévue à cet effet.
 
 ![alt texte](https://github.com/Nathan-Carre/projet_incendie/blob/main/ressources/Capture07.PNG)
 
-Une fois le nom du fichier saisi il suffit de cliquer sur le bouton "Sauvegarder le terrain".
+Une fois le nom du fichier saisi, il suffit de cliquer sur le bouton "Sauvegarder le terrain" pour qu'il se sauvegarde dans le dossier où se trouve le fichier projet_inecndie.py.
 
 ![alt texte](https://github.com/Nathan-Carre/projet_incendie/blob/main/ressources/Capture08.PNG)
 
-Une fois sauvegarder, un terrain peut être chargé ultérieurement afin de continuer la simulation. Cette manipulation est similaire à la précédente, il suffit donc de saisir le nom du ficher dans la zone prévue à cet effet (le même que pour celle de la sauvegarde), et enfin cliquer sur le bouton "Charger un terrain".
+Une fois sauvegarder, un terrain peut être chargé ultérieurement afin de continuer la simulation. Cette manipulation est similaire à la précédente, il suffit donc de saisir le nom du ficher que vous avez choisi de donner lors de la sauvegarde, sans l'extension ".txt", dans la zone prévue à cet effet (la même que pour celle de la sauvegarde). Enfin, il vous suffit de cliquer sur le bouton "Charger un terrain".
 
 ![alt texte](https://github.com/Nathan-Carre/projet_incendie/blob/main/ressources/Capture09.PNG)
 
 
 ### 5 - Statistiques 
 
-Afin de faciliter la visualisation à l'utilisateur, une section statistique a été ajoutée à l'interface. Cette section permet d'avoir un aperçu sur l'évolution de la quantité de chaque type de parcelles dans le terrain, en plus de l'évolution de la carte représentant le terrain.
+Afin de faciliter la visualisation et permettre à l'utilisateur de se rendre compte des proportions des différentes parcelles, une section statistique a été ajoutée à l'interface. Cette section est composée, en plus du label affichant le nombre total de parcelles afficher sur le canevas, de 5 labels mis à jour automatiquement. La section permet d'avoir un aperçu sur l'évolution de la quantité de chaque type de parcelles (Parcelles de feu, d'eau, de forêt mais aussi des parcelles de cendres tièdes et cendres chaudes) dans le terrain, en plus de l'évolution de l'incendie visible dans la fenêtre contenant le canevas.
 
 ![alt texte](https://github.com/Nathan-Carre/projet_incendie/blob/main/ressources/Capture10.PNG)
 
 ![alt texte](https://github.com/Nathan-Carre/projet_incendie/blob/main/ressources/Capture11.PNG)
+
+### 6 - Le code
+
+Le docstring de chaque fonctions, permettant de savoir ce qu'elles réalisent, est disponible avec l'outil : "help(nomDeMaFonction)" qui s'affichera dans le terminal. De plus, nous avons choisi d'utiliser la méthode "toplevel()" qui permet de diviser l'affichage en deux fenêtre distinctes, afin que l'utilisateur est une meilleur visibité et soit libre dans le placement des deux fenêtres Tkinter.
 
